@@ -7,7 +7,7 @@ local hostname = wezterm.hostname()
 ---@type table
 local human_rights_infos = {
   ["YutoWindows"] = true,
-  ["azusa"] = true,
+  ["Azusa"] = true,
   ["Wakamo"] = true,
   ["Izuna"] = true,
 }
@@ -29,7 +29,7 @@ global.is_m_mac = os_name == "aarch64-apple-darwin"
 global.is_linux = os_name == "x86_64-unknown-linux-gnu"
 global.is_windows = os_name == "x86_64-pc-windows-msvc"
 global.is_wsl = wezterm.running_under_wsl()
-global.is_azusa = hostname == "azusa"
+global.is_azusa = hostname == "Azusa"
 global.is_human_rights = is_human_rights
 global.is_home = hostname == "Wakamo"
 global.home = wezterm.home_dir
