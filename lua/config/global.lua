@@ -6,7 +6,6 @@ local hostname = wezterm.hostname()
 
 ---@type table
 local human_rights_infos = {
-  ["YutoWindows"] = true,
   ["Azusa"] = true,
   ["Wakamo"] = true,
   ["Izuna"] = true,
