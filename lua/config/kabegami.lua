@@ -8,6 +8,7 @@ local kabegami = {
   azusa = {
     kuroinu = "Azusa_by_96ENU.png",
     sentariba = "azusa_by_sentariba.png",
+    namatume = "azusa_by_namatume.png"
   },
 }
 
