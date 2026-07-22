@@ -1,0 +1,19 @@
+docs/plans/HANDOFF-tabline-noprofile.md
+  s_378692fbfad753::t_c6b41d310620c7 1-172
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.15",
+  "base_commit_sha": "7399f585910d7cd7c9dbd5790097888399e32486",
+  "prompts": {},
+  "sessions": {
+    "s_378692fbfad753": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0b07b7fe-8b0d-4ee3-8e94-6fda14ec320a",
+        "model": "claude-opus-4-8"
+      },
+      "human_author": "Yuto Tanaka <git@mimikun.dev>"
+    }
+  }
+}
