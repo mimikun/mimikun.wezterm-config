@@ -15,7 +15,7 @@ local kabegami = {
   },
 }
 
-local kabegami_name = kabegami.joke.mask_tukero
+local kabegami_name = kabegami.azusa.namatume
 local kabegami_path = table.concat({ global.home, ".kabegami", "random", kabegami_name }, global.path_sep)
 
 local function kabegami(config)
