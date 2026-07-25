@@ -1,0 +1,21 @@
+lua/config/window.lua
+  s_8cab4455749dce::t_78b849d7222de6 3-4
+wezterm.lua
+  s_8cab4455749dce::t_5936b196ba2495 66-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.16",
+  "base_commit_sha": "ae1eeec4dc1bcd1a8f47cb3f2294d9c44ffc8325",
+  "prompts": {},
+  "sessions": {
+    "s_8cab4455749dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dee0fc4f-ce3b-417b-9c11-e921655f9a9d",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Yuto Tanaka <git@mimikun.dev>"
+    }
+  }
+}
