@@ -63,9 +63,10 @@ safe_require("config.mouse")
 safe_require("config.programs")
 
 -- Load kabegami settings, if only `is_human_rights=true`
-if g.is_human_rights then
-  safe_require("config.kabegami")
-end
+-- NOTE: Temporarily disabled. Revert this commit to restore
+--if g.is_human_rights then
+--  safe_require("config.kabegami")
+--end
 
 -- Load Launcher-menu settings, if only `hostname!=azusa`
 if not g.is_azusa then
