@@ -1,6 +1,7 @@
 -- ref: https://karukichi-blog.netlify.app/blogs/wezterm
 local wezterm = require("wezterm")
 local action = wezterm.action
+local share_mode = require("config.share_mode")
 
 local function keyboard(config)
   config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
@@ -128,6 +129,8 @@ local function keyboard(config)
     { key = "^", mods = "SHIFT|CTRL", action = action.ActivateTab(5) },
     { key = "_", mods = "CTRL", action = action.DecreaseFontSize },
     { key = "_", mods = "SHIFT|CTRL", action = action.DecreaseFontSize },
+    -- LEADER + bで壁紙だけをON/OFFする
+    { key = "b", mods = "LEADER", action = share_mode.toggle_kabegami },
     { key = "c", mods = "SHIFT|CTRL", action = action.CopyTo("Clipboard") },
     { key = "c", mods = "SUPER", action = action.CopyTo("Clipboard") },
     { key = "f", mods = "SHIFT|CTRL", action = action.Search("CurrentSelectionOrEmptyString") },
@@ -157,9 +160,13 @@ local function keyboard(config)
     { key = "m", mods = "LEADER", action = action.ShowLauncher },
     { key = "n", mods = "SHIFT|CTRL", action = action.SpawnWindow },
     { key = "n", mods = "SUPER", action = action.SpawnWindow },
+    -- LEADER + oで背景の透過だけをON/OFFする
+    { key = "o", mods = "LEADER", action = share_mode.toggle_opacity },
     { key = "p", mods = "SHIFT|CTRL", action = action.ActivateCommandPalette },
     { key = "r", mods = "SHIFT|CTRL", action = action.ReloadConfiguration },
     { key = "r", mods = "SUPER", action = action.ReloadConfiguration },
+    -- LEADER + sで画面共有モード(不透明 + 壁紙OFF)をまとめて切り替える
+    { key = "s", mods = "LEADER", action = share_mode.toggle_all },
     { key = "t", mods = "SHIFT|CTRL", action = action.SpawnTab("CurrentPaneDomain") },
     { key = "t", mods = "SUPER", action = action.SpawnTab("CurrentPaneDomain") },
     -- LEADER + tでタブを新規作成

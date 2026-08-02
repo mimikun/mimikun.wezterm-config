@@ -19,7 +19,7 @@ local kabegami_name = kabegami.azusa.namatume
 local kabegami_path = table.concat({ global.home, ".kabegami", "random", kabegami_name }, global.path_sep)
 
 local function kabegami(config)
-  if global.is_human_rights then
+  if global.is_human_rights and not global.is_kabegami_disabled() then
     config.window_background_image = kabegami_path
     config.window_background_image_hsb = {
       hue = 1.0,
