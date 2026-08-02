@@ -57,7 +57,9 @@ Feature gating in `wezterm.lua` reads these flags — e.g. `config.kabegami` loa
 
 ### Feature modules (`lua/config/`)
 
-Split by concern — `colors`, `appearance`, `window`, `fonts`, `keyboard`, `mouse`, `programs`, `menu`, `kabegami`. Load order in `wezterm.lua` is intentional; keep new modules in a sensible position. `kabegami.lua` (wallpaper) selects an image from `~/.kabegami/random/` and only applies it on human-rights hosts.
+Split by concern — `colors`, `appearance`, `window`, `fonts`, `keyboard`, `mouse`, `programs`, `menu`, `kabegami`, `share_mode`. Load order in `wezterm.lua` is intentional; keep new modules in a sensible position. `kabegami.lua` (wallpaper) selects an image from `~/.kabegami/random/` and only applies it on human-rights hosts.
+
+`share_mode.lua` is the exception to the `function(config)` convention: it returns a plain table of toggle actions (like `utils/log.lua`) and registers an `augment-command-palette` handler as a side effect of being required, so `wezterm.lua` requires it directly rather than through `safe_require`. It backs the screen-share toggles (`LEADER-s` all, `LEADER-o` opacity, `LEADER-b` wallpaper, plus command palette entries) by flipping flags in `wezterm.GLOBAL` and calling `wezterm.reload_configuration()`. Consequently `window.lua` and `kabegami.lua` read those flags via `global.is_opaque()` / `global.is_kabegami_disabled()` instead of hardcoding — do not "simplify" the opacity back to a constant. The reload-based design is deliberate: `window:set_config_overrides()` cannot unset `window_background_image` once the config file sets it (wezterm/wezterm#5240).
 
 ### Plugins (`lua/plugins/`)
 

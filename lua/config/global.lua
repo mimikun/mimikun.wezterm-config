@@ -40,4 +40,18 @@ global.path_sep = global.is_windows and "\\" or "/"
 global.SPACE_1 = " "
 global.SPACE_3 = "   "
 
+-- NOTE: Runtime toggles for screen sharing, flipped from config/share_mode.lua.
+-- State lives in wezterm.GLOBAL so it survives config reloads. These are
+-- functions, not booleans, because the command palette handlers run outside of
+-- config evaluation and must read the current value each time.
+---@return boolean
+global.is_opaque = function()
+  return wezterm.GLOBAL.opaque_mode == true
+end
+
+---@return boolean
+global.is_kabegami_disabled = function()
+  return wezterm.GLOBAL.kabegami_disabled == true
+end
+
 return global
