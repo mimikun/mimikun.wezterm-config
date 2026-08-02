@@ -1,0 +1,33 @@
+lua/config/window.lua
+  s_967726adbccce3::t_efd39d06d57fee 1-2,5
+lua/config/share_mode.lua
+  s_967726adbccce3::t_2a5926e52c1e10 1-57
+CLAUDE.md
+  s_967726adbccce3::t_3a98647f42aed3 60-62
+wezterm.lua
+  s_967726adbccce3::t_db77d57ab5d095 32-34
+lua/config/keyboard.lua
+  s_967726adbccce3::t_4fdf38fb2474b9 132-133
+  s_967726adbccce3::t_ccadae2876c4e9 163-164,168-169
+  s_967726adbccce3::t_9e999713791dbc 4
+lua/config/kabegami.lua
+  s_967726adbccce3::t_0b64fa16328e7e 22
+lua/config/global.lua
+  s_967726adbccce3::t_573288dee0e20d 43-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.20",
+  "base_commit_sha": "3ffd4bd3d25cd310d54c2acd242375f2b6e7470a",
+  "prompts": {},
+  "sessions": {
+    "s_967726adbccce3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d2b2a238-72f8-47b1-a334-7659cca86c83",
+        "model": "claude-opus-5"
+      },
+      "human_author": "Yuto Tanaka <git@mimikun.dev>"
+    }
+  }
+}
