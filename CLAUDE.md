@@ -21,13 +21,38 @@ Git/workflow helpers live in `Taskfile.yml` (run with [Task](https://taskfile.de
 
 ```bash
 task              # List all tasks
-task pab          # Create a patch-YYYYMMDD branch
 task smas         # Switch to master branch
 task push         # Push to origin master (MAIN_BRANCH=master)
-task morning-routine  # clean-fetch → delete patch branches → pull → new patch branch
 ```
 
-There is no build/test step — WezTerm loads `wezterm.lua` directly. To verify changes, reload the config inside WezTerm (or restart it) and check the debug overlay for load errors.
+`task pab` (patch-YYYYMMDD branch) and `task morning-routine` are the repo owner's own manual
+tools. Do not use them — see Conventions for the branch naming agents should use.
+
+## Verifying changes
+
+There is no build/test step — WezTerm loads `wezterm.lua` directly. **The repo is edited and
+version-controlled under WSL, but the config is actually applied on Windows**, so a change cannot
+be visually confirmed in the same place it is written. Split verification accordingly:
+
+Checks that work anywhere:
+
+```bash
+stylua --check . && selene . && typos
+wezterm --config-file ./wezterm.lua show-keys   # evaluates the entire config
+```
+
+**`show-keys` exits 0 even when the config throws** — WezTerm silently falls back to its built-in
+defaults and prints no error. The exit code proves nothing. Judge by whether expected content is
+present, e.g. `... show-keys | grep -c LEADER` returns ~21 for this config and 0 for a broken one.
+
+To assert a value the config computes, load `wezterm.lua` from a throwaway config file via
+`dofile(wezterm.config_dir .. "/wezterm.lua")`, print with `wezterm.log_error(...)`, run `show-keys`,
+and grep stderr. Place that file inside this directory so `wezterm.config_dir` still resolves, and
+delete it afterwards.
+
+Anything visual — opacity, wallpaper, colors, fonts, the command palette — must be confirmed on
+Windows after checkout. Reload with `CTRL-SHIFT-R` and check the debug overlay (`CTRL-SHIFT-L`) for
+load errors; `safe_require` swallows failures, so never treat "it looks fine" as proof a module loaded.
 
 ## Architecture
 
@@ -73,4 +98,16 @@ Debug helpers called at the end of `wezterm.lua`: `debug_log_print` (dumps host 
 
 - Comments and docs in English; inline Japanese comments exist in keymap files (`keyboard.lua`) explaining specific bindings — preserve them.
 - Modules commonly cite their source with a `-- ref: <url>` comment at the top. Keep these when adapting upstream code.
-- `master` is the main branch; day-to-day work happens on `patch-YYYYMMDD` branches created via `task pab`.
+- `master` is the main branch. Never commit or push to it directly.
+- Branch names follow the Conventional Commits type of the work: `feat/<topic>`, `fix/<topic>`,
+  `docs/<topic>`, `refactor/<topic>`. Branch off an up-to-date `master`
+  (`git switch master && git pull --ff-only && git switch -c feat/<topic>`).
+- `patch-YYYYMMDD` branches (`task pab`, `task morning-routine`) belong to the repo owner's own
+  manual workflow. Agents must not create, reuse, or delete them.
+- Changes ship through a PR, because the work is written under WSL and verified on Windows: open the
+  PR, the owner checks the branch out on Windows, verifies, then merges. State plainly in the PR
+  which checks actually ran and which are left for Windows — do not present a WSL-only run as full
+  verification.
+- The owner merges with **rebase merge**, so SHAs change on merge. Judge whether a branch is already
+  merged with `git cherry origin/master <branch>` (a `-` means the patch is already on master), not
+  with GitHub's `mergeable` field.
