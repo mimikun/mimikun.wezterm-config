@@ -65,6 +65,11 @@ wezterm.on("augment-command-palette", function()
       icon = "md_pin",
       action = kabegami_mode.fix,
     },
+    {
+      brief = "Wallpaper: pick one",
+      icon = "md_image_search",
+      action = kabegami_mode.pick,
+    },
   }
 end)
 
