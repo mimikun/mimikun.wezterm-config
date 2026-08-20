@@ -199,4 +199,24 @@ M.pick = wezterm.action_callback(function(window, pane)
   )
 end)
 
+--- Entries for the command palette. Registered by config/palette.lua, which
+--- owns the single augment-command-palette handler.
+M.palette_entries = {
+  {
+    brief = "Wallpaper: random mode (draw a new image)",
+    icon = "md_shuffle_variant",
+    action = M.shuffle,
+  },
+  {
+    brief = "Wallpaper: fixed mode (keep the current image)",
+    icon = "md_pin",
+    action = M.fix,
+  },
+  {
+    brief = "Wallpaper: pick one",
+    icon = "md_image_search",
+    action = M.pick,
+  },
+}
+
 return M
