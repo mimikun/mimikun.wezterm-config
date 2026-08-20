@@ -14,7 +14,7 @@ local wezterm = require("wezterm")
 
 local sources = {
   require("config.share_mode"),
-  require("config.kabegami.mode"),
+  require("config.kabegami"),
 }
 
 wezterm.on("augment-command-palette", function()

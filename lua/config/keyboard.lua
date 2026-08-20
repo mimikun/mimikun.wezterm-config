@@ -2,7 +2,7 @@
 local wezterm = require("wezterm")
 local action = wezterm.action
 local share_mode = require("config.share_mode")
-local kabegami_mode = require("config.kabegami.mode")
+local kabegami = require("config.kabegami")
 
 local function keyboard(config)
   config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
@@ -133,11 +133,11 @@ local function keyboard(config)
     -- LEADER + bで壁紙だけをON/OFFする
     { key = "b", mods = "LEADER", action = share_mode.toggle_kabegami },
     -- LEADER + r で壁紙をランダムに引き直す(ランダムモードに入る)
-    { key = "r", mods = "LEADER", action = kabegami_mode.shuffle },
+    { key = "r", mods = "LEADER", action = kabegami.shuffle },
     -- LEADER + f で今の壁紙のまま固定する(固定モードに入る)
-    { key = "f", mods = "LEADER", action = kabegami_mode.fix },
+    { key = "f", mods = "LEADER", action = kabegami.fix },
     -- LEADER + p で壁紙を一覧から選ぶ(ピッカー)
-    { key = "p", mods = "LEADER", action = kabegami_mode.pick },
+    { key = "p", mods = "LEADER", action = kabegami.pick },
     { key = "c", mods = "SHIFT|CTRL", action = action.CopyTo("Clipboard") },
     { key = "c", mods = "SUPER", action = action.CopyTo("Clipboard") },
     { key = "f", mods = "SHIFT|CTRL", action = action.Search("CurrentSelectionOrEmptyString") },

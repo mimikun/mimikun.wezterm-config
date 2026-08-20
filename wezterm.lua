@@ -34,13 +34,22 @@ local g = require("config.global")
 require("config.palette")
 
 -- NOTE: Define safe_require function
+-- A module may be a function taking config, or a table with an `apply` field of
+-- the same shape. The table form exists for modules that also have to export
+-- something -- actions for keyboard.lua, entries for palette.lua -- which a
+-- bare function cannot carry, Lua functions having no fields. Without it those
+-- modules have to be split in two files that read as duplicates.
 local function safe_require(module_name)
   local success, module = pcall(require, module_name)
-  if success and type(module) == "function" then
-    return module(config)
-  elseif not success then
+  if not success then
     wezterm.log_info("Failed to load " .. module_name)
     return config
+  end
+  if type(module) == "function" then
+    return module(config)
+  end
+  if type(module) == "table" and type(module.apply) == "function" then
+    return module.apply(config)
   end
 end
 
