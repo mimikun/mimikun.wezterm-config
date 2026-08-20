@@ -219,4 +219,22 @@ M.palette_entries = {
   },
 }
 
+--- Puts the chosen image into config. Called by wezterm.lua through
+--- safe_require, which accepts a table with an `apply` as well as a bare
+--- function -- this module has to be both, because keyboard.lua and
+--- palette.lua need the actions above.
+---@param config table
+function M.apply(config)
+  if not global.is_human_rights or global.is_kabegami_disabled() then
+    return
+  end
+
+  local image = M.current_image()
+  if image == nil then
+    return
+  end
+
+  config.window_background_image = image
+end
+
 return M
