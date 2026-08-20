@@ -1,32 +1,24 @@
+-- Applies the wallpaper. Which image that is -- and whether there is one at
+-- all -- is decided in config/kabegami_mode.lua.
 local global = require("config.global")
-
----@type table
-local kabegami = {
-  butasan = {
-    nesoberi = "butasan_nesoberi.png",
-  },
-  azusa = {
-    kuroinu = "Azusa_by_96ENU.png",
-    sentariba = "azusa_by_sentariba.png",
-    namatume = "azusa_by_namatume.png",
-  },
-  joke = {
-    mask_tukero = "mask_tukero.png",
-  },
-}
-
-local kabegami_name = kabegami.azusa.namatume
-local kabegami_path = table.concat({ global.home, ".kabegami", "random", kabegami_name }, global.path_sep)
+local mode = require("config.kabegami_mode")
 
 local function kabegami(config)
-  if global.is_human_rights and not global.is_kabegami_disabled() then
-    config.window_background_image = kabegami_path
-    config.window_background_image_hsb = {
-      hue = 1.0,
-      saturation = 1.0,
-      brightness = 0.07,
-    }
+  if not global.is_human_rights or global.is_kabegami_disabled() then
+    return
   end
+
+  local image = mode.current_image()
+  if image == nil then
+    return
+  end
+
+  config.window_background_image = image
+  config.window_background_image_hsb = {
+    hue = 1.0,
+    saturation = 1.0,
+    brightness = 0.07,
+  }
 end
 
 return kabegami
