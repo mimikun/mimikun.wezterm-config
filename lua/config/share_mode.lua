@@ -8,6 +8,7 @@
 -- config file has set it. So both toggles flip a flag in wezterm.GLOBAL and
 -- reload the config instead; GLOBAL survives config reloads by design.
 local wezterm = require("wezterm")
+local kabegami_mode = require("config.kabegami_mode")
 
 local M = {}
 
@@ -49,6 +50,20 @@ wezterm.on("augment-command-palette", function()
       brief = "Toggle wallpaper (kabegami)",
       icon = "md_image_off",
       action = M.toggle_kabegami,
+    },
+    -- The wallpaper mode entries are registered from here rather than from
+    -- config/kabegami_mode.lua because a second augment-command-palette
+    -- handler would be a guess about whether WezTerm merges what they return.
+    -- One handler, one place.
+    {
+      brief = "Wallpaper: random mode (draw a new image)",
+      icon = "md_shuffle_variant",
+      action = kabegami_mode.shuffle,
+    },
+    {
+      brief = "Wallpaper: fixed mode (keep the current image)",
+      icon = "md_pin",
+      action = kabegami_mode.fix,
     },
   }
 end)
