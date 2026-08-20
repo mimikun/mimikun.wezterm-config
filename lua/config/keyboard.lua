@@ -136,6 +136,8 @@ local function keyboard(config)
     { key = "r", mods = "LEADER", action = kabegami_mode.shuffle },
     -- LEADER + f で今の壁紙のまま固定する(固定モードに入る)
     { key = "f", mods = "LEADER", action = kabegami_mode.fix },
+    -- LEADER + p で壁紙を一覧から選ぶ(ピッカー)
+    { key = "p", mods = "LEADER", action = kabegami_mode.pick },
     { key = "c", mods = "SHIFT|CTRL", action = action.CopyTo("Clipboard") },
     { key = "c", mods = "SUPER", action = action.CopyTo("Clipboard") },
     { key = "f", mods = "SHIFT|CTRL", action = action.Search("CurrentSelectionOrEmptyString") },

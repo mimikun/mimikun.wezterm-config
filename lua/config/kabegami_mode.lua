@@ -4,29 +4,41 @@
 -- same directory, with `setwallpaper <file>` and `setrandom ~/.kabegami/random`,
 -- so this reuses that split rather than adding a third way to describe it.
 --
+-- The single source of truth is ~/.kabegami/mode, one line:
+--
+--   random                          -- draw from random/ on every start
+--   random/azusa_by_namatume.png    -- keep this one
+--   azusa_02.jpg                    -- anything else under ~/.kabegami/
+--
+-- A file rather than wezterm.GLOBAL, because GLOBAL does not survive a
+-- restart. Paths in it are relative to ~/.kabegami/ and always written with
+-- forward slashes, so the same file means the same thing read from Windows
+-- (where WezTerm runs) and from WSL (where a future editor plugin would write
+-- it). Editing the line by hand is a supported way to choose.
+--
 -- The images cannot be redistributed, so they are placed by hand on each
 -- machine and are simply absent on some of them -- the WSL side of this host
 -- has none at all. Every path is therefore optional: with nothing to show,
 -- no wallpaper is set, instead of pointing window_background_image at a file
--- that is not there. The old hand-written table had already drifted that way,
--- declaring butasan_nesoberi.png and azusa_by_sentariba.png, neither of which
--- exists (the second is azusa-sentariba.png, with a hyphen, in the parent
--- directory). Globbing the directory cannot drift.
---
--- State lives in wezterm.GLOBAL, which survives config reloads but not a
--- restart -- the same reason config/share_mode.lua uses it. The fixed image
--- declared below is what a restart falls back to.
+-- that is not there. The hand-written table that used to live here had already
+-- drifted that way, declaring butasan_nesoberi.png and azusa_by_sentariba.png,
+-- neither of which exists (the second is azusa-sentariba.png, with a hyphen,
+-- in the parent directory). Globbing the directory cannot drift.
 local wezterm = require("wezterm")
 local global = require("config.global")
 
 local M = {}
 
-local kabegami_dir = table.concat({ global.home, ".kabegami" }, global.path_sep)
-local random_dir = table.concat({ kabegami_dir, "random" }, global.path_sep)
+local sep = global.path_sep
+local kabegami_dir = table.concat({ global.home, ".kabegami" }, sep)
+local random_dir = table.concat({ kabegami_dir, "random" }, sep)
+local state_path = table.concat({ kabegami_dir, "mode" }, sep)
 
---- The image fixed mode starts from. Editing this line is how that choice is
---- made; living in the config file is also what carries it across restarts.
-M.fixed_image = table.concat({ random_dir, "azusa_by_namatume.png" }, global.path_sep)
+--- What ~/.kabegami/mode says when it is missing, empty or unreadable, which
+--- is every machine that has never been switched.
+M.default_state = "random/azusa_by_namatume.png"
+
+M.RANDOM = "random"
 
 -- wezterm.glob is case-sensitive, and the collection holds both .jpg and .JPG.
 local image_patterns = { "*.png", "*.PNG", "*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.webp" }
@@ -37,11 +49,58 @@ local function exists(path)
   return #wezterm.glob(path) > 0
 end
 
----@return string[] absolute paths of every image directly under random/
-local function random_candidates()
+---@param rel string forward-slash path under ~/.kabegami/
+---@return string absolute path with this platform's separator
+local function absolute(rel)
+  return kabegami_dir .. sep .. (rel:gsub("/", sep))
+end
+
+---@param path string absolute
+---@return string|nil forward-slash path under ~/.kabegami/, nil if outside it
+local function relative(path)
+  local normalised = path:gsub("\\", "/")
+  local prefix = kabegami_dir:gsub("\\", "/") .. "/"
+  if normalised:sub(1, #prefix) ~= prefix then
+    return nil
+  end
+  return normalised:sub(#prefix + 1)
+end
+
+---@return string contents of ~/.kabegami/mode, or the default
+function M.read_state()
+  local handle = io.open(state_path, "r")
+  if handle == nil then
+    return M.default_state
+  end
+  local line = handle:read("l")
+  handle:close()
+  if line == nil then
+    return M.default_state
+  end
+  line = line:match("^%s*(.-)%s*$")
+  return line ~= "" and line or M.default_state
+end
+
+---@param value string
+local function write_state(value)
+  local handle = io.open(state_path, "w")
+  if handle == nil then
+    -- The directory is created by hand along with the images, so a machine
+    -- without it has nothing to show anyway; failing quietly keeps the
+    -- keybinding from erroring on those hosts.
+    wezterm.log_info("kabegami: cannot write " .. state_path)
+    return
+  end
+  handle:write(value .. "\n")
+  handle:close()
+end
+
+---@param dir string absolute
+---@return string[] absolute paths of every image directly under dir
+local function images_in(dir)
   local found = {}
   for _, pattern in ipairs(image_patterns) do
-    for _, path in ipairs(wezterm.glob(random_dir .. global.path_sep .. pattern)) do
+    for _, path in ipairs(wezterm.glob(dir .. sep .. pattern)) do
       table.insert(found, path)
     end
   end
@@ -50,10 +109,10 @@ local function random_candidates()
 end
 
 --- Public so that the "it actually changes" behaviour can be asserted without
---- a running GUI; see AGENTS.md on verifying computed values.
+--- a running GUI; see CLAUDE.md on verifying computed values.
 ---@return string|nil a different image from the one on screen, or nil if none
 function M.next_image()
-  local files = random_candidates()
+  local files = images_in(random_dir)
   if #files == 0 then
     return nil
   end
@@ -80,7 +139,9 @@ end
 
 ---@return string|nil path to show, or nil for no wallpaper at all
 function M.current_image()
-  if wezterm.GLOBAL.kabegami_mode == "random" then
+  if M.read_state() == M.RANDOM then
+    -- Which image is a per-session detail: an unrelated reload should not
+    -- reshuffle the wallpaper, so it is drawn once and kept in GLOBAL.
     if wezterm.GLOBAL.kabegami_image == nil then
       wezterm.GLOBAL.kabegami_image = M.next_image()
     end
@@ -88,13 +149,13 @@ function M.current_image()
     return image ~= nil and exists(image) and image or nil
   end
 
-  local image = wezterm.GLOBAL.kabegami_pinned or M.fixed_image
+  local image = absolute(M.read_state())
   return exists(image) and image or nil
 end
 
 --- Switch to random mode and draw a new image. Pressing this again redraws.
 M.shuffle = wezterm.action_callback(function()
-  wezterm.GLOBAL.kabegami_mode = "random"
+  write_state(M.RANDOM)
   wezterm.GLOBAL.kabegami_image = M.next_image()
   wezterm.reload_configuration()
 end)
@@ -102,9 +163,40 @@ end)
 --- Switch to fixed mode, keeping whatever is on screen right now. Shuffle until
 --- an image is worth keeping, then press this to stop it changing.
 M.fix = wezterm.action_callback(function()
-  wezterm.GLOBAL.kabegami_pinned = M.current_image()
-  wezterm.GLOBAL.kabegami_mode = "fixed"
+  local shown = M.current_image()
+  write_state(shown ~= nil and relative(shown) or M.default_state)
   wezterm.reload_configuration()
+end)
+
+--- Pick from every image under ~/.kabegami/, plus random mode.
+M.pick = wezterm.action_callback(function(window, pane)
+  local choices = { { id = M.RANDOM, label = "random (draw from random/ each start)" } }
+  for _, dir in ipairs({ kabegami_dir, random_dir }) do
+    for _, path in ipairs(images_in(dir)) do
+      local id = relative(path)
+      if id ~= nil then
+        table.insert(choices, { id = id, label = id })
+      end
+    end
+  end
+
+  window:perform_action(
+    wezterm.action.InputSelector({
+      title = "Wallpaper",
+      choices = choices,
+      action = wezterm.action_callback(function(_, _, id)
+        if id == nil then
+          return
+        end
+        write_state(id)
+        if id == M.RANDOM then
+          wezterm.GLOBAL.kabegami_image = M.next_image()
+        end
+        wezterm.reload_configuration()
+      end),
+    }),
+    pane
+  )
 end)
 
 return M
