@@ -53,6 +53,9 @@ safe_require("config.appearance")
 -- Load window settings
 safe_require("config.window")
 
+-- Load background rendering settings (opacity, wallpaper hue/brightness)
+safe_require("config.background")
+
 -- Load font settings
 safe_require("config.fonts")
 
