@@ -8,7 +8,6 @@
 -- config file has set it. So both toggles flip a flag in wezterm.GLOBAL and
 -- reload the config instead; GLOBAL survives config reloads by design.
 local wezterm = require("wezterm")
-local kabegami_mode = require("config.kabegami_mode")
 
 local M = {}
 
@@ -33,45 +32,25 @@ M.toggle_all = wezterm.action_callback(function()
   wezterm.reload_configuration()
 end)
 
--- ref: https://wezterm.org/config/lua/window-events/augment-command-palette.html
-wezterm.on("augment-command-palette", function()
-  return {
-    {
-      brief = "Toggle screen share mode (opaque + no wallpaper)",
-      icon = "md_monitor_share",
-      action = M.toggle_all,
-    },
-    {
-      brief = "Toggle window background opacity",
-      icon = "md_circle_opacity",
-      action = M.toggle_opacity,
-    },
-    {
-      brief = "Toggle wallpaper (kabegami)",
-      icon = "md_image_off",
-      action = M.toggle_kabegami,
-    },
-    -- The wallpaper mode entries are registered from here rather than from
-    -- config/kabegami_mode.lua because a second augment-command-palette
-    -- handler would be a guess about whether WezTerm merges what they return.
-    -- One handler, one place.
-    {
-      brief = "Wallpaper: random mode (draw a new image)",
-      icon = "md_shuffle_variant",
-      action = kabegami_mode.shuffle,
-    },
-    {
-      brief = "Wallpaper: fixed mode (keep the current image)",
-      icon = "md_pin",
-      action = kabegami_mode.fix,
-    },
-    {
-      brief = "Wallpaper: pick one",
-      icon = "md_image_search",
-      action = kabegami_mode.pick,
-    },
-  }
-end)
+--- Entries for the command palette. Registered by config/palette.lua, which
+--- owns the single augment-command-palette handler.
+M.palette_entries = {
+  {
+    brief = "Toggle screen share mode (opaque + no wallpaper)",
+    icon = "md_monitor_share",
+    action = M.toggle_all,
+  },
+  {
+    brief = "Toggle window background opacity",
+    icon = "md_circle_opacity",
+    action = M.toggle_opacity,
+  },
+  {
+    brief = "Toggle wallpaper (kabegami)",
+    icon = "md_image_off",
+    action = M.toggle_kabegami,
+  },
+}
 
 -- Returns a table with the toggle actions
 return M

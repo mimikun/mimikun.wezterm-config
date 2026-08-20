@@ -29,8 +29,9 @@ local config = wezterm.config_builder and wezterm.config_builder() or {}
 -- Load global module
 local g = require("config.global")
 
--- Load screen share mode module (registers the command palette entries)
-require("config.share_mode")
+-- Load the command palette entries (required for its side effect: it registers
+-- the augment-command-palette handler for every feature module that has any)
+require("config.palette")
 
 -- NOTE: Define safe_require function
 local function safe_require(module_name)

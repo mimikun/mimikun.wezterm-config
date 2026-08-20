@@ -2,7 +2,7 @@
 local wezterm = require("wezterm")
 local action = wezterm.action
 local share_mode = require("config.share_mode")
-local kabegami_mode = require("config.kabegami_mode")
+local kabegami_mode = require("config.kabegami.mode")
 
 local function keyboard(config)
   config.leader = { key = "q", mods = "CTRL", timeout_milliseconds = 1000 }
